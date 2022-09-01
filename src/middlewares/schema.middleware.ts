@@ -1,7 +1,7 @@
-import { NextFunction, Response, Request } from 'express';
-import { ObjectSchema } from 'joi';
+import { NextFunction, Response, Request } from "express";
+import { ObjectSchema } from "joi";
 
-import { AppError } from './error.handler.middleware.js';
+import { AppError } from "./error.handler.middleware.js";
 
 export default function validateSchemaMiddleware(schema: ObjectSchema) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -10,11 +10,10 @@ export default function validateSchemaMiddleware(schema: ObjectSchema) {
 
     if (error) {
       throw new AppError(
-        'Invalid input',
-          422,
-        'Invalid input',
-        error.details.map((e) => e.message).join(', ')
-      )
+        422,
+        "Invalid input",
+        error.details.map((e) => e.message).join(", ")
+      );
     }
 
     res.locals.body = req.body;

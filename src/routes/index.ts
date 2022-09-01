@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import cardRouter from "./cardRouter.js";
+import cardRouter from "./card.router.js";
 //import paymentRouter from "./paymentRouter.js";
 //import rechargeRouter from "./rechargeRouter.js";
 

@@ -1,18 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 
 class AppError {
-  log: string
   statusCode: number
   message: string
-  details: string | {} | string[]
+  details: string | {} | string[] 
 
   constructor (
-    log: string,
     statusCode: number,
     message: string,
     details: string | {} | string[]
   ) {
-    this.log = log
     this.statusCode = statusCode
     this.message = message
     this.details = details
@@ -25,10 +22,8 @@ function errorHandler (
   res: Response,
   _next: NextFunction
 ) {
-  const { log, statusCode, message, details } = error;
-
-  console.log('dentro do error');
-
+  const { statusCode, message, details } = error;
+  
   return error.statusCode !== 500
     ? res.status(statusCode).send({ message, details })
     : res.status(500).send({
