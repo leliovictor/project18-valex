@@ -10,3 +10,11 @@ export async function postCard(req: Request, res: Response) {
 
     return res.sendStatus(200);
 }
+
+export async function postActivationCard(req: Request, res: Response) {
+    const {id, CVC, password} = res.locals.body;
+
+    await service.activateCard(id, CVC, password);
+    
+    return res.sendStatus(200);
+}
