@@ -34,3 +34,12 @@ export async function postUnblockCard(req: Request, res: Response) {
     
     return res.sendStatus(200);
 }
+
+export async function cardBalance(req: Request, res: Response) {
+    const {id} = res.locals.body;
+
+    const balance = await service.balanceCard(id);
+    
+    return res.status(200).send(balance);
+
+}

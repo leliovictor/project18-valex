@@ -12,6 +12,8 @@ import { AppError } from "../middlewares/error.handler.middleware.js";
 import * as cardRepository from "../repositories/cardRepository.js";
 import * as employeeRepository from "../repositories/employeeRepository.js";
 import * as companyRepository from "../repositories/companyRepository.js";
+import * as rechargeRepository from "../repositories/rechargeRepository.js";
+import * as paymentRepository from "../repositories/paymentRepository.js";
 
 dotenv.config();
 const cryptr = new Cryptr(process.env.CRYPTR);
@@ -234,4 +236,29 @@ export async function unblockCard(id: number, password: string) {
   }
 
   await cardRepository.update(id, unblockObject);
+}
+
+function calcAmountFromArrObject(arrObj: any[]) {
+  return arrObj.reduce(( sum: number, { amount }) => sum + amount, 0);
+}
+
+
+export async function balanceCard(id: number) {
+  const card = await checkCardRegister(id);
+
+  const recharge = await rechargeRepository.findByCardId(id);
+  const rechargeTotal = calcAmountFromArrObject(recharge)
+
+  const payment = await paymentRepository.findByCardId(id);
+  const paymentTotal = calcAmountFromArrObject(payment);
+
+  const balance = rechargeTotal - paymentTotal;
+
+  const balanceObject = {
+    balance,
+    transactions: payment,
+    recharges: recharge
+  };
+
+  return balanceObject;
 }
