@@ -1,45 +1,44 @@
-import {Request, Response} from 'express';
+import { Request, Response } from "express";
 
 import * as service from "../services/card.service.js";
 
-export async function postCard(req: Request, res: Response) {
-    const {employeeId, type} = res.locals.body;
-    const {apiKey} = res.locals;
-    
-    await service.addNewCard(employeeId, type, apiKey);
+export async function postCard(_req: Request, res: Response) {
+  const { employeeId, type } = res.locals.body;
+  const { apiKey } = res.locals;
 
-    return res.sendStatus(200);
+  await service.addNewCard(employeeId, type, apiKey);
+
+  return res.sendStatus(200);
 }
 
-export async function postActivationCard(req: Request, res: Response) {
-    const {id, CVC, password} = res.locals.body;
+export async function postActivationCard(_req: Request, res: Response) {
+  const { id, CVC, password } = res.locals.body;
 
-    await service.activateCard(id, CVC, password);
-    
-    return res.sendStatus(200);
+  await service.activateCard(id, CVC, password);
+
+  return res.sendStatus(200);
 }
 
-export async function postBlockCard(req: Request, res: Response) {
-    const {id, password} = res.locals.body;
-    
-    await service.blockCard(id, password);
+export async function postBlockCard(_req: Request, res: Response) {
+  const { id, password } = res.locals.body;
 
-    return res.sendStatus(200);
+  await service.blockCard(id, password);
+
+  return res.sendStatus(200);
 }
 
-export async function postUnblockCard(req: Request, res: Response) {
-    const {id, password} = res.locals.body;
+export async function postUnblockCard(_req: Request, res: Response) {
+  const { id, password } = res.locals.body;
 
-    await service.unblockCard(id, password);
-    
-    return res.sendStatus(200);
+  await service.unblockCard(id, password);
+
+  return res.sendStatus(200);
 }
 
-export async function cardBalance(req: Request, res: Response) {
-    const {id} = res.locals.body;
+export async function cardBalance(_req: Request, res: Response) {
+  const { id } = res.locals.body;
 
-    const balance = await service.balanceCard(id);
-    
-    return res.status(200).send(balance);
+  const balance = await service.balanceCard(id);
 
+  return res.status(200).send(balance);
 }

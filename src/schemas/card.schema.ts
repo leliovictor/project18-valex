@@ -10,13 +10,25 @@ const cardSchema = joi.object({
 
 const cardActivationSchema = joi.object({
   id: joi.number().integer().greater(0).required(),
-  CVC: joi.string().length(3).pattern(/^[0-9]{3}$/).required(), 
-  password: joi.string().length(4).pattern(/^[0-9]{4}$/).required(),
+  CVC: joi
+    .string()
+    .length(3)
+    .pattern(/^[0-9]{3}$/)
+    .required(),
+  password: joi
+    .string()
+    .length(4)
+    .pattern(/^[0-9]{4}$/)
+    .required(),
 });
 
 const cardBlockSchema = joi.object({
   id: joi.number().integer().greater(0).required(),
-  password: joi.string().length(4).pattern(/^[0-9]{4}$/).required(),
+  password: joi
+    .string()
+    .length(4)
+    .pattern(/^[0-9]{4}$/)
+    .required(),
 });
 
 const cardBalanceSchema = joi.object({

@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
 
-import { RechargeInsertData } from "../repositories/rechargeRepository.js";
+import * as service from "../services/recharge.service.js";
 
-import * as repository from "../repositories/rechargeRepository.js";
+export async function postRecharge(_req: Request, res: Response) {
+  const {cardId, amount} = res.locals.body;
+  const { apiKey } = res.locals;
 
-async function registerCredit(_req: Request, res: Response) {
-  const body: RechargeInsertData = res.locals.body;
-  await repository.insert(body);
+  await service.rechargeCard(cardId, amount, apiKey);
+  
   return res.sendStatus(200);
 }
-
-export { registerCredit };

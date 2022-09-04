@@ -1,22 +1,18 @@
 import { Router } from "express";
 
-import * as schema from "../schemas/recharge.schema.js";
-import * as middleware from "../middlewares/recharge.middleware.js";
-import * as controller from "../controllers/recharge.controller.js";
-
 import checkCompanyToken from "../middlewares/token.middleware.js";
 import validateSchemaMiddleware from "../middlewares/schema.middleware.js";
+
+import * as schema from "../schemas/recharge.schema.js";
+import * as controller from "../controllers/recharge.controller.js";
 
 const rechargeRouter = Router();
 
 rechargeRouter.post(
-  "/recharge", 
+  "/recharges",
   checkCompanyToken,
-  validateSchemaMiddleware(schema.insertCredit),
-  middleware.checkIfCardExists,
-  middleware.checkIfCardIsActive,
-  middleware.checkCardExpirationDate,
-  controller.registerCredit  
-  );
+  validateSchemaMiddleware(schema.rechargeSchema),
+  controller.postRecharge
+);
 
 export default rechargeRouter;

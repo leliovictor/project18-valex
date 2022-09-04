@@ -20,7 +20,7 @@ const cryptr = new Cryptr(process.env.CRYPTR);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(customParseFormat);
 
-async function checkCompanyApiKey(apiKey: string) {
+export async function checkCompanyApiKey(apiKey: string) {
   const company = await companyRepository.findByApiKey(apiKey);
 
   if (!company) {
@@ -110,29 +110,23 @@ export async function addNewCard(
   });
 }
 
-
-///////////////////////////////////////////////////////
-////////////ACTIVATION CARD SERVICE ///////////////////
-///////////////////////////////////////////////////////
-
 export async function checkCardRegister(id: number) {
   const card = await cardRepository.findById(id);
 
-  if(!card) {
-    throw new AppError(
-      404,
-      `Card not found`,
-      "Check card id before activate"
-    );
+  if (!card) {
+    throw new AppError(404, `Card not found`, "Check card id before activate");
   }
 
   return card;
 }
 
 export function checkCardExpirationDate(expirateDate: string) {
-  const beforeOrSame = dayjs().isSameOrBefore(dayjs(expirateDate, "MM/YYYY"), "month");
-  
-  if(!beforeOrSame) {
+  const beforeOrSame = dayjs().isSameOrBefore(
+    dayjs(expirateDate, "MM/YYYY"),
+    "month"
+  );
+
+  if (!beforeOrSame) {
     throw new AppError(
       409,
       "Card has expired",
@@ -142,7 +136,7 @@ export function checkCardExpirationDate(expirateDate: string) {
 }
 
 function checkIfAlreadyActive(password: string | null) {
-  if(password) {
+  if (password) {
     throw new AppError(
       409,
       "Card already active",
@@ -153,26 +147,20 @@ function checkIfAlreadyActive(password: string | null) {
 
 function validateCVC(CVC: string, registerCVC: string) {
   const registerCVCdecrypt = cryptr.decrypt(registerCVC);
-  
-  if(CVC !== registerCVCdecrypt) {
-    throw new AppError(
-      409,
-      "CVC invalid",
-      "Check card security code"
-    );
+
+  if (CVC !== registerCVCdecrypt) {
+    throw new AppError(409, "CVC invalid", "Check card security code");
   }
-
-
 }
 
-export async function activateCard(id:number, CVC:string, password:string) {
+export async function activateCard(id: number, CVC: string, password: string) {
   const card = await checkCardRegister(id);
   checkCardExpirationDate(card.expirationDate);
   checkIfAlreadyActive(card.password);
   validateCVC(CVC, card.securityCode);
 
   const passwordCript = bcrypt.hashSync(password, 10);
-  
+
   const updateObject = {
     isBlocked: false,
     password: passwordCript,
@@ -182,7 +170,7 @@ export async function activateCard(id:number, CVC:string, password:string) {
 }
 
 export function checkCardAlreadyBlock(block: boolean) {
-  if(block) {
+  if (block) {
     throw new AppError(
       409,
       "Card blocked",
@@ -193,7 +181,7 @@ export function checkCardAlreadyBlock(block: boolean) {
 
 export function checkCardPassword(passwordBody: string, passwordCard: string) {
   const validPassword = bcrypt.compareSync(passwordBody, passwordCard);
-  if(!validPassword) {
+  if (!validPassword) {
     throw new AppError(
       401,
       "Password Invalid",
@@ -210,13 +198,13 @@ export async function blockCard(id: number, password: string) {
 
   const blockObject = {
     isBlocked: true,
-  }
+  };
 
   await cardRepository.update(id, blockObject);
 }
 
 function checkCardUnblock(block: boolean) {
-  if(!block) {
+  if (!block) {
     throw new AppError(
       409,
       "Card is already unlock",
@@ -233,21 +221,20 @@ export async function unblockCard(id: number, password: string) {
 
   const unblockObject = {
     isBlocked: false,
-  }
+  };
 
   await cardRepository.update(id, unblockObject);
 }
 
 function calcAmountFromArrObject(arrObj: any[]) {
-  return arrObj.reduce(( sum: number, { amount }) => sum + amount, 0);
+  return arrObj.reduce((sum: number, { amount }) => sum + amount, 0);
 }
-
 
 export async function balanceCard(id: number) {
   const card = await checkCardRegister(id);
 
   const recharge = await rechargeRepository.findByCardId(id);
-  const rechargeTotal = calcAmountFromArrObject(recharge)
+  const rechargeTotal = calcAmountFromArrObject(recharge);
 
   const payment = await paymentRepository.findByCardId(id);
   const paymentTotal = calcAmountFromArrObject(payment);
@@ -257,8 +244,18 @@ export async function balanceCard(id: number) {
   const balanceObject = {
     balance,
     transactions: payment,
-    recharges: recharge
+    recharges: recharge,
   };
 
   return balanceObject;
+}
+
+export async function checkIfCardIsActive(password: string | null) {
+  if(!password) {
+    throw new AppError(
+      409,
+      "Card is not active",
+      "Active your card before procede"
+    );
+  }
 }
