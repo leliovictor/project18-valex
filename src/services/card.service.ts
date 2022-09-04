@@ -113,7 +113,7 @@ export async function addNewCard(
 ////////////ACTIVATION CARD SERVICE ///////////////////
 ///////////////////////////////////////////////////////
 
-async function checkCardRegister(id: number) {
+export async function checkCardRegister(id: number) {
   const card = await cardRepository.findById(id);
 
   if(!card) {
@@ -127,7 +127,7 @@ async function checkCardRegister(id: number) {
   return card;
 }
 
-function checkCardExpirationDate(expirateDate: string) {
+export function checkCardExpirationDate(expirateDate: string) {
   const beforeOrSame = dayjs().isSameOrBefore(dayjs(expirateDate, "MM/YYYY"), "month");
   
   if(!beforeOrSame) {
@@ -177,4 +177,38 @@ export async function activateCard(id:number, CVC:string, password:string) {
   };
 
   await cardRepository.update(id, updateObject);
+}
+
+export function checkCardBlock(block: boolean) {
+  if(block) {
+    throw new AppError(
+      409,
+      "Card blocked",
+      "Cannot procede because card is block"
+    );
+  }
+}
+
+export function checkCardPassword(passwordBody: string, passwordCard: string) {
+  const validPassword = bcrypt.compareSync(passwordBody, passwordCard);
+  if(!validPassword) {
+    throw new AppError(
+      401,
+      "Password Invalid",
+      "Check password before procede"
+    );
+  }
+}
+
+export async function blockCard(id: number, password: string) {
+  const card = await checkCardRegister(id);
+  checkCardExpirationDate(card.expirationDate);
+  checkCardBlock(card.isBlocked);
+  checkCardPassword(password, card.password);
+
+  const blockObject = {
+    isBlocked: true,
+  }
+
+  await cardRepository.update(id, blockObject);
 }

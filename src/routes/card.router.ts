@@ -16,4 +16,6 @@ cardRouter.post(
 
 cardRouter.post("/cards/activation", validateSchemaMiddleware(schema.cardActivationSchema), controller.postActivationCard);
 
+cardRouter.post("/cards/block", validateSchemaMiddleware(schema.cardBlockSchema), controller.postBlockCard);
+
 export default cardRouter;
