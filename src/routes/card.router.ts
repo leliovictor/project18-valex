@@ -18,4 +18,5 @@ cardRouter.post("/cards/activation", validateSchemaMiddleware(schema.cardActivat
 
 cardRouter.post("/cards/block", validateSchemaMiddleware(schema.cardBlockSchema), controller.postBlockCard);
 
+cardRouter.post("/cards/unblock", validateSchemaMiddleware(schema.cardBlockSchema), controller.postUnblockCard);
 export default cardRouter;

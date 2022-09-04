@@ -179,7 +179,7 @@ export async function activateCard(id:number, CVC:string, password:string) {
   await cardRepository.update(id, updateObject);
 }
 
-export function checkCardBlock(block: boolean) {
+export function checkCardAlreadyBlock(block: boolean) {
   if(block) {
     throw new AppError(
       409,
@@ -203,7 +203,7 @@ export function checkCardPassword(passwordBody: string, passwordCard: string) {
 export async function blockCard(id: number, password: string) {
   const card = await checkCardRegister(id);
   checkCardExpirationDate(card.expirationDate);
-  checkCardBlock(card.isBlocked);
+  checkCardAlreadyBlock(card.isBlocked);
   checkCardPassword(password, card.password);
 
   const blockObject = {
@@ -211,4 +211,27 @@ export async function blockCard(id: number, password: string) {
   }
 
   await cardRepository.update(id, blockObject);
+}
+
+function checkCardUnblock(block: boolean) {
+  if(!block) {
+    throw new AppError(
+      409,
+      "Card is already unlock",
+      "Cannot procede because card is already unlock"
+    );
+  }
+}
+
+export async function unblockCard(id: number, password: string) {
+  const card = await checkCardRegister(id);
+  checkCardExpirationDate(card.expirationDate);
+  checkCardUnblock(card.isBlocked);
+  checkCardPassword(password, card.password);
+
+  const unblockObject = {
+    isBlocked: false,
+  }
+
+  await cardRepository.update(id, unblockObject);
 }

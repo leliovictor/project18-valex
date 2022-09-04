@@ -26,3 +26,11 @@ export async function postBlockCard(req: Request, res: Response) {
 
     return res.sendStatus(200);
 }
+
+export async function postUnblockCard(req: Request, res: Response) {
+    const {id, password} = res.locals.body;
+
+    await service.unblockCard(id, password);
+    
+    return res.sendStatus(200);
+}
