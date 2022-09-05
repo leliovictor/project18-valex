@@ -21,6 +21,8 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(customParseFormat);
 
 export async function checkCompanyApiKey(apiKey: string) {
+  console.log(apiKey);
+
   const company = await companyRepository.findByApiKey(apiKey);
 
   if (!company) {
@@ -89,12 +91,12 @@ export async function addNewCard(
   await checkCompanyApiKey(apiKey);
   await checkCardDuplicate(employeeId, type);
   const employee = await checkEmployeeRegister(employeeId);
-
   const cardNumber = faker.finance.creditCardNumber();
   const cardName = formatEmployeeName(employee.fullName);
   const cardCVCCripter = cryptr.encrypt(faker.finance.creditCardCVV());
 
   const expirationDate = dayjs().add(5, "year").format("MM/YYYY");
+
 
   await cardRepository.insert({
     employeeId,
@@ -105,7 +107,7 @@ export async function addNewCard(
     password: null,
     isVirtual: false,
     originalCardId: null,
-    isBlocked: true,
+    isBlocked: false,
     type,
   });
 }
