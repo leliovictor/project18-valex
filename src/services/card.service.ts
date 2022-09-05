@@ -91,7 +91,8 @@ export async function addNewCard(
   const employee = await checkEmployeeRegister(employeeId);
   const cardNumber = faker.finance.creditCardNumber();
   const cardName = formatEmployeeName(employee.fullName);
-  const cardCVCCripter = cryptr.encrypt(faker.finance.creditCardCVV());
+  const cardCVC = faker.finance.creditCardCVV();
+  const cardCVCCripter = cryptr.encrypt(cardCVC);
 
   const expirationDate = dayjs().add(5, "year").format("MM/YYYY");
 
@@ -107,6 +108,8 @@ export async function addNewCard(
     isBlocked: false,
     type,
   });
+
+  return cardCVC;
 }
 
 export async function checkCardRegister(id: number) {
