@@ -145,7 +145,7 @@ function checkIfAlreadyActive(password: string | null) {
   }
 }
 
-function validateCVC(CVC: string, registerCVC: string) {
+export function validateCVC(CVC: string, registerCVC: string) {
   const registerCVCdecrypt = cryptr.decrypt(registerCVC);
 
   if (CVC !== registerCVCdecrypt) {

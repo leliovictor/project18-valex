@@ -9,3 +9,11 @@ export async function postPayment(_req: Request, res: Response) {
 
   return res.sendStatus(200);
 }
+
+export async function postOnlinePayment(_req: Request, res: Response) {
+  const {number, cardholderName, expirationDate, CVC, businessId, amount} = res.locals.body;
+ 
+  await service.onlinePayment(number, cardholderName, expirationDate, CVC, businessId, amount);
+
+  return res.sendStatus(200);
+}
