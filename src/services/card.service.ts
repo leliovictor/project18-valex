@@ -21,8 +21,6 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(customParseFormat);
 
 export async function checkCompanyApiKey(apiKey: string) {
-  console.log(apiKey);
-
   const company = await companyRepository.findByApiKey(apiKey);
 
   if (!company) {
@@ -96,7 +94,6 @@ export async function addNewCard(
   const cardCVCCripter = cryptr.encrypt(faker.finance.creditCardCVV());
 
   const expirationDate = dayjs().add(5, "year").format("MM/YYYY");
-
 
   await cardRepository.insert({
     employeeId,
@@ -253,7 +250,7 @@ export async function balanceCard(id: number) {
 }
 
 export async function checkIfCardIsActive(password: string | null) {
-  if(!password) {
+  if (!password) {
     throw new AppError(
       409,
       "Card is not active",
