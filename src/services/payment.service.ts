@@ -62,15 +62,19 @@ export async function payment(
   await paymentRepository.insert({ cardId, businessId, amount });
 }
 
-async function checkCardInfos(number: string, cardholderName: string, expirationDate: string) {
-  const result = await cardRepository.findByCardDetails(number, cardholderName, expirationDate);
+async function checkCardInfos(
+  number: string,
+  cardholderName: string,
+  expirationDate: string
+) {
+  const result = await cardRepository.findByCardDetails(
+    number,
+    cardholderName,
+    expirationDate
+  );
 
-  if(!result) {
-    throw new AppError(
-      404,
-      "Card not found",
-      "Check card details"
-    );
+  if (!result) {
+    throw new AppError(404, "Card not found", "Check card details");
   }
 
   return result;
@@ -84,7 +88,6 @@ export async function onlinePayment(
   businessId: number,
   amount: number
 ) {
-
   const card = await checkCardInfos(number, cardholderName, expirationDate);
   cardService.validateCVC(CVC, card.securityCode);
   cardService.checkCardExpirationDate(card.expirationDate);
@@ -93,7 +96,5 @@ export async function onlinePayment(
   compareBusinessCardTypes(card.type, business.type);
   await checkCardBalance(card.id, amount);
 
-  await paymentRepository.insert({ cardId:card.id, businessId, amount });
-
-
+  await paymentRepository.insert({ cardId: card.id, businessId, amount });
 }
