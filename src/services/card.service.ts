@@ -179,13 +179,15 @@ export function checkCardAlreadyBlock(block: boolean) {
 }
 
 export function checkCardPassword(passwordBody: string, passwordCard: string) {
-  const validPassword = bcrypt.compareSync(passwordBody, passwordCard);
-  if (!validPassword) {
-    throw new AppError(
-      401,
-      "Password Invalid",
-      "Check password before procede"
-    );
+  if (passwordCard) {
+    const validPassword = bcrypt.compareSync(passwordBody, passwordCard);
+    if (!validPassword) {
+      throw new AppError(
+        401,
+        "Password Invalid",
+        "Check password before procede"
+      );
+    }
   }
 }
 

@@ -24,6 +24,8 @@ function errorHandler(
 ) {
   const { statusCode, message, details } = error;
 
+  console.log(statusCode, message, details);
+
   return error.statusCode !== 500
     ? res.status(statusCode).send({ message, details })
     : res.status(500).send({
