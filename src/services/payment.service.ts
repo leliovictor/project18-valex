@@ -1,15 +1,41 @@
 import * as cardService from "./card.service.js";
+import * as businessRepository from "../repositories/businessRepository.js";
+import * as paymentRepository from "../repositories/paymentRepository.js";
 
 import { AppError } from "../middlewares/error.handler.middleware.js";
 
-function checkCardActive(password: string | null) {
-  if(!password) {
+export async function checkBusinessRegister(id: number) {
+  const business = await businessRepository.findById(id);
+
+  if(!business) {
+    throw new AppError(404, "Business not found", "Check business id before procede");
+  }
+
+  return business;
+}
+
+export function compareBusinessCardTypes(cardType: string, businessType: string) {
+  if(cardType !== businessType) {
+    throw new AppError(
+      409, 
+      "Card type invalid",
+      "Only business and card types with same value are valid"
+      )
+  }
+}
+
+export async function checkCardBalance(cardId: number, amount: number) {
+  const {balance} = await cardService.balanceCard(cardId);
+  
+  if(balance - amount < 0) {
     throw new AppError(
       409,
-      "Card is not active",
-      "Activate your card before buy something"
+      "Insufficient card balance",
+      "Recharge your card before procede"
     );
   }
+
+
 }
 
 export async function payment(
@@ -19,25 +45,14 @@ export async function payment(
   amount: number
 ) {
 
-  //Somente cartões cadastrados devem poder comprar
     const card = await cardService.checkCardRegister(cardId);
-
-//- Somente cartões ativos devem poder comprar;
-    checkCardActive(card.password);
-
-//- Somente cartões não expirados devem poder comprar
+    await cardService.checkIfCardIsActive(card.password);
     cardService.checkCardExpirationDate(card.expirationDate);
-
-    /*
-
-
-- Somente cartões não bloqueados devem poder comprar
-- A senha do cartão deverá ser recebida e verificada para garantir a segurança da requisição
-- Somente estabelecimentos cadastrados devem poder transacionar
-- Somente estabelecimentos do mesmo tipo do cartão devem poder transacionar com ele
-- O cartão deve possuir saldo suficiente para cobrir o montante da compra
-- A compra deve ser persistida
-    */
-
-    console.log('chegou aqui');
+    cardService.checkCardAlreadyBlock(card.isBlocked);
+    cardService.checkCardPassword(password, card.password);
+    const business = await checkBusinessRegister(businessId);
+    compareBusinessCardTypes(card.type, business.type);
+    await checkCardBalance(cardId, amount);
+    
+    await paymentRepository.insert({cardId,businessId, amount});
 }
